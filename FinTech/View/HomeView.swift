@@ -11,6 +11,8 @@ protocol HomeViewInterface: AnyObject {
     func configureVC()
     func configureLabels()
     func reloadView()
+    func configurePickerView()
+    func updateUI()
 }
 
 final class HomeView: UIViewController {
@@ -20,37 +22,80 @@ final class HomeView: UIViewController {
     private let labelForPreviousClose = UILabel()
     private let labelHasPrePostMarketData = UILabel()
     private var isReloaded = false
+    private let pickerView = UIPickerView()
+    private let chooseStocksInPicker = UIButton()
+    private let pickerViewContainer = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.view = self
         viewModel.viewDidLoad()
         
-        
     }
 }
 
-extension HomeView: HomeViewInterface {
-    func configureVC() {
-        view.backgroundColor = .white
+extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return dataForStocks.count
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return dataForStocks[row]
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        pickerView.selectRow(row, inComponent: component, animated: true)
+        let selectedData = dataForStocks[row]
+        viewModel.updateSelectedData(selectedData)
         
     }
+    
+    func updateUI() {
+        guard let stockInfo = viewModel.stockInfo else { return }
+        labelForSymbol.text = stockInfo.symbol
+        labelForStockPrice.text = "\(String(describing: stockInfo.regularMarketPrice))"
+        labelForSymbol.text = stockInfo.symbol
+        labelForStockPrice.text = "\(String(describing: stockInfo.regularMarketPrice )) \(String(describing: stockInfo.currency ))"
+        labelForPreviousClose.text = "\(stockInfo.previousClose)"
+        if stockInfo.hasPrePostMarketData == true {
+            labelHasPrePostMarketData.text = " Closed Market "
+            labelHasPrePostMarketData.backgroundColor = .systemRed
+            labelHasPrePostMarketData.layer.cornerRadius = 5
+            labelHasPrePostMarketData.layer.masksToBounds = true
+        } else {
+            labelHasPrePostMarketData.text = " Open Market "
+            labelHasPrePostMarketData.backgroundColor = .systemGreen
+            labelHasPrePostMarketData.layer.cornerRadius = 5
+            labelHasPrePostMarketData.layer.masksToBounds = true
+        }
+        viewModel.updateStockInfo(with: stockInfo)
+        
+    }
+    func configureVC() {
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        print(dataForStocks.count)
+    }
     func reloadView() {
-        guard !isReloaded else { return }
-        isReloaded = true
-        viewDidLoad()
+        updateUI()
+        pickerViewContainer.isHidden = true
     }
     func configureLabels() {
         labelForStockPrice.translatesAutoresizingMaskIntoConstraints = false
+        labelForStockPrice.textColor = .white
         labelForStockPrice.text = "\(String(describing: viewModel.stockInfo?.regularMarketPrice ?? .zero)) \(String(describing: viewModel.stockInfo?.currency ?? "Unknown"))"
         labelForStockPrice.font = .systemFont(ofSize: 32, weight: .semibold)
         
         view.addSubview(labelForStockPrice)
         labelForSymbol.translatesAutoresizingMaskIntoConstraints = false
+        labelForSymbol.textColor = .white
         labelForSymbol.text = "\(String(describing: viewModel.stockInfo?.symbol ?? "Unknown"))"
         labelForSymbol.font = .systemFont(ofSize: 36, weight: .semibold)
         view.addSubview(labelForSymbol)
         
         labelForPreviousClose.translatesAutoresizingMaskIntoConstraints = false
+        labelForPreviousClose.textColor = .white
         labelForPreviousClose.text = "Previous Price: \(viewModel.stockInfo?.previousClose ?? .zero)"
         labelForPreviousClose.font = .systemFont(ofSize: 15, weight: .semibold)
         view.addSubview(labelForPreviousClose)
@@ -59,13 +104,13 @@ extension HomeView: HomeViewInterface {
         labelHasPrePostMarketData.textColor = .secondaryLabel
         labelHasPrePostMarketData.font = .systemFont(ofSize: 12, weight: .semibold)
         if viewModel.stockInfo?.hasPrePostMarketData == true {
-            labelHasPrePostMarketData.text = " Open Market "
-            labelHasPrePostMarketData.backgroundColor = .systemGreen
+            labelHasPrePostMarketData.text = " Closed Market "
+            labelHasPrePostMarketData.backgroundColor = .systemRed
             labelHasPrePostMarketData.layer.cornerRadius = 5
             labelHasPrePostMarketData.layer.masksToBounds = true
         } else {
-            labelHasPrePostMarketData.text = " Closed Market "
-            labelHasPrePostMarketData.backgroundColor = .systemRed
+            labelHasPrePostMarketData.text = " Open Market "
+            labelHasPrePostMarketData.backgroundColor = .systemGreen
             labelHasPrePostMarketData.layer.cornerRadius = 5
             labelHasPrePostMarketData.layer.masksToBounds = true
         }
@@ -89,5 +134,42 @@ extension HomeView: HomeViewInterface {
             
         ])
         
+    }
+    func configurePickerView() {
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        pickerView.translatesAutoresizingMaskIntoConstraints = false
+        pickerViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        chooseStocksInPicker.translatesAutoresizingMaskIntoConstraints = false
+        
+        pickerViewContainer.isHidden = true
+        pickerViewContainer.backgroundColor = .lightGray
+        
+        chooseStocksInPicker.setTitle("Choose Stock", for: .normal)
+        chooseStocksInPicker.setTitleColor(.white, for: .normal)
+        chooseStocksInPicker.tintColor = .systemBlue
+        chooseStocksInPicker.backgroundColor = .lightGray
+        chooseStocksInPicker.setTitleColor(.black, for: .normal)
+        chooseStocksInPicker.frame = CGRect(x: 0, y: 0, width: 80, height: 30)
+        chooseStocksInPicker.addTarget(self, action: #selector(tappedChooseStock), for: .touchUpInside)
+        view.addSubview(chooseStocksInPicker)
+        view.addSubview(pickerViewContainer)
+        pickerViewContainer.bounds = pickerView.bounds
+        pickerViewContainer.addSubview(pickerView)
+        NSLayoutConstraint.activate([
+            chooseStocksInPicker.topAnchor.constraint(equalTo: labelForPreviousClose.bottomAnchor, constant: 10),
+            chooseStocksInPicker.leadingAnchor.constraint(equalTo: labelForSymbol.leadingAnchor),
+            
+            pickerView.centerXAnchor.constraint(equalTo: pickerViewContainer.centerXAnchor),
+            pickerViewContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            pickerViewContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pickerViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            pickerViewContainer.heightAnchor.constraint(equalToConstant: view.frame.size.width/2),
+            
+        ])
+    }
+    @objc func tappedChooseStock() {
+        print("tappedChooseStock")
+        pickerViewContainer.isHidden = false
     }
 }

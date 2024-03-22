@@ -14,9 +14,18 @@ protocol HomeViewModelInterface {
 final class HomeViewModel {
     weak var view: HomeViewInterface?
     var stockInfo: StockInfo?
-    let url = "https://query1.finance.yahoo.com/v8/finance/chart/CHWY?range=5m"
+    let url = "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=5m"
     
-    private func getStockPrice() {
+    
+    func updateSelectedData(_ data: String) {
+        let updatedURL = "https://query1.finance.yahoo.com/v8/finance/chart/\(data)?range=5m"
+        getStockPrice(with: updatedURL)
+    }
+    func updateStockInfo(with stockInfo: StockInfo) {
+        self.stockInfo = stockInfo
+    }
+    
+    private func getStockPrice(with url: String) {
         NetworkManager.instance.fetch(.get, url: url, requestModel: nil, model: Yahoo.self) { response in
             switch(response) {
             case .success(let result):
@@ -44,9 +53,9 @@ final class HomeViewModel {
                     if let previousClose = meta.previousClose {
                         print("Son kapanan mum fiyatı: \(previousClose)")
                     }
-                    if let exchangeName = meta.exchangeName {
-                        print("Borsa Adı: \(exchangeName)")
-                    }
+//                    if let exchangeName = meta.exchangeName {
+//                        print("Borsa Adı: \(exchangeName)")
+//                    }
                     if let hasPrePostMarketData = meta.hasPrePostMarketData {
                         print("Sanırım market açık bilgisi: \(hasPrePostMarketData)")
                     }
@@ -57,7 +66,10 @@ final class HomeViewModel {
                                           previousClose: meta.previousClose ?? 0.0,
                                           exchangeName: meta.exchangeName ?? "Unknown",
                                           hasPrePostMarketData: meta.hasPrePostMarketData ?? false)
+                    self.stockInfo = self.stockInfo
                     self.view?.reloadView()
+
+                    
                     
                 }
             case .failure(let error):
@@ -72,8 +84,9 @@ final class HomeViewModel {
 
 extension HomeViewModel: HomeViewModelInterface {
     func viewDidLoad() {
-        getStockPrice()
+        getStockPrice(with: url)
         view?.configureVC()
         view?.configureLabels()
+        view?.configurePickerView()
     }
 }
