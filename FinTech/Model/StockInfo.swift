@@ -14,4 +14,5 @@ struct StockInfo {
     let previousClose: Double
     let exchangeName: String
     let hasPrePostMarketData: Bool
+    let closePrice: [[Double?]]
 }

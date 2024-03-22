@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DGCharts
 
 protocol HomeViewInterface: AnyObject {
     func configureVC()
@@ -13,6 +14,7 @@ protocol HomeViewInterface: AnyObject {
     func reloadView()
     func configurePickerView()
     func updateUI()
+    func configureChart()
 }
 
 final class HomeView: UIViewController {
@@ -25,6 +27,7 @@ final class HomeView: UIViewController {
     private let pickerView = UIPickerView()
     private let chooseStocksInPicker = UIButton()
     private let pickerViewContainer = UIView()
+    private let lineChart = LineChartView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,7 +73,23 @@ extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSou
             labelHasPrePostMarketData.layer.cornerRadius = 5
             labelHasPrePostMarketData.layer.masksToBounds = true
         }
+        var dataEntries: [ChartDataEntry] = []
+        for i in 0..<stockInfo.closePrice.count {
+            let innerArray = stockInfo.closePrice[i]
+            for optionalDouble in innerArray {
+                if let doubleValue = optionalDouble {
+                    let dataEntry = ChartDataEntry(x: Double(doubleValue), y: doubleValue)
+                    dataEntries.append(dataEntry)
+                    
+                }
+            }
+        }
         viewModel.updateStockInfo(with: stockInfo)
+        
+    }
+    func configureChart() {
+        lineChart.translatesAutoresizingMaskIntoConstraints = false
+        
         
     }
     func configureVC() {

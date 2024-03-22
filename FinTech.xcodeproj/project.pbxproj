@@ -21,6 +21,7 @@
 		8DC9FAD12BACD1E900BC1A82 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8DC9FAD02BACD1E900BC1A82 /* Alamofire */; };
 		8DC9FAD32BACE30B00BC1A82 /* StockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC9FAD22BACE30B00BC1A82 /* StockInfo.swift */; };
 		8DC9FAD52BADAC2E00BC1A82 /* PickerDataOnHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC9FAD42BADAC2E00BC1A82 /* PickerDataOnHomeView.swift */; };
+		8DC9FAD82BAE1F6800BC1A82 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 8DC9FAD72BAE1F6800BC1A82 /* DGCharts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8DC9FAD82BAE1F6800BC1A82 /* DGCharts in Frameworks */,
 				8DC9FAD12BACD1E900BC1A82 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +142,7 @@
 			name = FinTech;
 			packageProductDependencies = (
 				8DC9FAD02BACD1E900BC1A82 /* Alamofire */,
+				8DC9FAD72BAE1F6800BC1A82 /* DGCharts */,
 			);
 			productName = FinTech;
 			productReference = 8DC9FAA62BACCD5E00BC1A82 /* FinTech.app */;
@@ -171,6 +174,7 @@
 			mainGroup = 8DC9FA9D2BACCD5E00BC1A82;
 			packageReferences = (
 				8DC9FACF2BACD1E900BC1A82 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				8DC9FAD62BAE1F6700BC1A82 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			productRefGroup = 8DC9FAA72BACCD5E00BC1A82 /* Products */;
 			projectDirPath = "";
@@ -435,6 +439,14 @@
 				minimumVersion = 5.9.0;
 			};
 		};
+		8DC9FAD62BAE1F6700BC1A82 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -442,6 +454,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8DC9FACF2BACD1E900BC1A82 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		8DC9FAD72BAE1F6800BC1A82 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8DC9FAD62BAE1F6700BC1A82 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
