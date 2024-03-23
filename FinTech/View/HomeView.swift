@@ -7,6 +7,10 @@
 
 import UIKit
 import DGCharts
+import SwiftUICharts
+import SwiftUI
+import Combine
+
 
 protocol HomeViewInterface: AnyObject {
     func configureVC()
@@ -15,9 +19,10 @@ protocol HomeViewInterface: AnyObject {
     func configurePickerView()
     func updateUI()
     func configureChart()
+    
 }
 
-final class HomeView: UIViewController {
+final class HomeView: UIViewController,ObservableObject {
     private let viewModel = HomeViewModel()
     private let labelForStockPrice = UILabel()
     private let labelForSymbol = UILabel()
@@ -27,7 +32,8 @@ final class HomeView: UIViewController {
     private let pickerView = UIPickerView()
     private let chooseStocksInPicker = UIButton()
     private let pickerViewContainer = UIView()
-    private let lineChart = LineChartView()
+    var stockClosePrice = [Double]()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -73,22 +79,36 @@ extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSou
             labelHasPrePostMarketData.layer.cornerRadius = 5
             labelHasPrePostMarketData.layer.masksToBounds = true
         }
-        var dataEntries: [ChartDataEntry] = []
         for i in 0..<stockInfo.closePrice.count {
             let innerArray = stockInfo.closePrice[i]
             for optionalDouble in innerArray {
                 if let doubleValue = optionalDouble {
-                    let dataEntry = ChartDataEntry(x: Double(doubleValue), y: doubleValue)
-                    dataEntries.append(dataEntry)
-                    
+                    stockClosePrice.append(doubleValue)
                 }
             }
         }
+        
         viewModel.updateStockInfo(with: stockInfo)
         
     }
     func configureChart() {
-        lineChart.translatesAutoresizingMaskIntoConstraints = false
+        
+        let stockPrice = StockPrice()
+        stockPrice.stockPrice = stockClosePrice
+        let controller = UIHostingController(rootView: LineCharts().environmentObject(stockPrice))
+        guard let priceView = controller.view else {
+            return
+        }
+        priceView.backgroundColor = .clear
+        priceView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(priceView)
+        
+        NSLayoutConstraint.activate([
+            priceView.topAnchor.constraint(equalTo: chooseStocksInPicker.bottomAnchor, constant: 10),
+            priceView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            priceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            priceView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.35)
+        ])
         
         
     }

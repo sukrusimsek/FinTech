@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 protocol HomeViewModelInterface {
     var view: HomeViewInterface? { get set }
     func viewDidLoad()
@@ -14,6 +15,7 @@ protocol HomeViewModelInterface {
 final class HomeViewModel {
     weak var view: HomeViewInterface?
     var stockInfo: StockInfo?
+    @Published var stockClosePrice = [Double]()
     let url = "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=5d&interval=5m"
     
     
@@ -37,7 +39,7 @@ final class HomeViewModel {
                     print("No chart or results in yahoo")
                     return
                 }
-               
+                
                 
                 for res in results {
                     guard let indicators = res.indicators else {
@@ -51,6 +53,8 @@ final class HomeViewModel {
                     }
                     let chartDataList = quote.compactMap { $0.close }
 //                    print("Kapanış Fiyatları:",chartDataList)
+                    
+                    
                     
                     if let currency = meta.currency {
                         print("Parite: \(currency)")
@@ -100,5 +104,6 @@ extension HomeViewModel: HomeViewModelInterface {
         view?.configureVC()
         view?.configureLabels()
         view?.configurePickerView()
+        view?.configureChart()
     }
 }
