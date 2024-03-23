@@ -6,10 +6,7 @@
 //
 
 import UIKit
-import DGCharts
-import SwiftUICharts
 import SwiftUI
-import Combine
 
 
 protocol HomeViewInterface: AnyObject {
@@ -33,7 +30,7 @@ final class HomeView: UIViewController,ObservableObject {
     private let chooseStocksInPicker = UIButton()
     private let pickerViewContainer = UIView()
     var stockClosePrice = [Double]()
-    
+    let stockPrice = StockPrice()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,20 +83,20 @@ extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSou
                     stockClosePrice.append(doubleValue)
                 }
             }
+            stockPrice.stockPrice = stockClosePrice
+            stockPrice.stockName = labelForSymbol.text
+//            print("Deneme Dataları: ",stockClosePrice)
         }
-        
+        stockClosePrice.removeAll()
         viewModel.updateStockInfo(with: stockInfo)
         
     }
     func configureChart() {
-        
-        let stockPrice = StockPrice()
-        stockPrice.stockPrice = stockClosePrice
         let controller = UIHostingController(rootView: LineCharts().environmentObject(stockPrice))
         guard let priceView = controller.view else {
             return
         }
-        priceView.backgroundColor = .clear
+//        priceView.backgroundColor = .clear
         priceView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceView)
         
@@ -114,7 +111,7 @@ extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSou
     }
     func configureVC() {
         navigationController?.setNavigationBarHidden(true, animated: false)
-        print(dataForStocks.count)
+        print(dataForStocks.count)//Stock count in pickerView
     }
     func reloadView() {
         updateUI()

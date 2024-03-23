@@ -23,15 +23,18 @@ struct LineCharts:View {
     var body: some View {
         VStack(alignment: .center, spacing: 50, content: {
             LineChartView(data: prices.stockPrice,
-                          title: "Charts of AAPL",
-                          legend: "Last 7 Days",
-                          form: ChartForm.extraLarge)
-            
+                          title: prices.stockName ?? "Charts",
+//                          legend: "Daily",
+                          form: ChartForm.extraLarge,
+                          rateValue: .zero
+                          
+                          )
+//            .overlay(Text("FinTech").font(.headline), alignment: .topTrailing)
         })
     }
 }
 
 class StockPrice: ObservableObject {
     @Published var stockPrice: [Double] = []
-    
+    @Published var stockName: String?
 }

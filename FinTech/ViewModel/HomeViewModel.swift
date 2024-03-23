@@ -16,11 +16,11 @@ final class HomeViewModel {
     weak var view: HomeViewInterface?
     var stockInfo: StockInfo?
     @Published var stockClosePrice = [Double]()
-    let url = "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=5d&interval=5m"
+    let url = "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1d&interval=5m"
     
     
     func updateSelectedData(_ data: String) {
-        let updatedURL = "https://query1.finance.yahoo.com/v8/finance/chart/\(data)?range=5d&interval=5m"
+        let updatedURL = "https://query1.finance.yahoo.com/v8/finance/chart/\(data)?range=1d&interval=5m"
         getStockPrice(with: updatedURL)
     }
     func updateStockInfo(with stockInfo: StockInfo) {
