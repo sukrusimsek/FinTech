@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 import SwiftUICharts
 
-struct ClosePrices: Identifiable {
-    let id = UUID()
-    let price: Double
-}
+//struct ClosePrices: Identifiable {
+//    let id = UUID()
+//    let price: Double
+//}
 
 
 
@@ -22,11 +22,13 @@ struct LineCharts:View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 50, content: {
-            LineChartView(data: prices.stockPrice,
-                          title: prices.stockName ?? "Charts",
+            LineView(data: prices.stockPrice,
+                          title: prices.stockName ?? "Charts"
 //                          legend: "Daily",
-                          form: ChartForm.extraLarge,
-                          rateValue: .zero
+//                          form: ChartForm.extraLarge
+                        
+//                          rateValue: .zero,
+//                          dropShadow: false
                           
                           )
 //            .overlay(Text("FinTech").font(.headline), alignment: .topTrailing)

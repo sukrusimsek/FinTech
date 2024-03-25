@@ -96,7 +96,7 @@ extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSou
         guard let priceView = controller.view else {
             return
         }
-//        priceView.backgroundColor = .clear
+        priceView.backgroundColor = .clear
         priceView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(priceView)
         
@@ -106,7 +106,8 @@ extension HomeView: HomeViewInterface, UIPickerViewDelegate, UIPickerViewDataSou
             priceView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             priceView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.35)
         ])
-        
+//        stockPrice.stockPrice.removeAll()
+//        stockPrice.stockName?.removeAll()
         
     }
     func configureVC() {
